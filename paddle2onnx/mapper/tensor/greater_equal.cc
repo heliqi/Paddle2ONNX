@@ -45,13 +45,6 @@ void GreaterEqualMapper::Opset12() {
   int out_dtype = 0;
   std::vector<std::string> aligned_inputs =
       helper_->DtypeAlignment({x_info[0], y_info[0]}, &out_dtype);
-  if (out_dtype != P2ODataType::FP32 && out_dtype != P2ODataType::FP64 &&
-      helper_->GetOpsetVersion() < 11) {
-    aligned_inputs[0] =
-        helper_->AutoCast(aligned_inputs[0], out_dtype, P2ODataType::FP32);
-    aligned_inputs[1] =
-        helper_->AutoCast(aligned_inputs[1], out_dtype, P2ODataType::FP32);
-  }
 
   helper_->MakeNode("GreaterOrEqual", aligned_inputs, {out_info[0].name});
 }

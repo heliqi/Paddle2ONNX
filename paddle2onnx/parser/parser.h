@@ -23,7 +23,7 @@
 
 namespace paddle2onnx {
 
-enum P2ODataType { BOOL, INT16, INT32, INT64, FP16, FP32, FP64 };
+enum P2ODataType { BOOL, INT16, INT32, INT64, FP16, FP32, FP64, X7, X8, X9, X10, X11, X12, X13, X14, X15, X16, X17, X18, X19, UINT8};
 int32_t PaddleDataTypeSize(int32_t paddle_dtype);
 
 struct TensorInfo {
@@ -147,7 +147,7 @@ class PaddleParser {
   // While there's a nms operator in paddle model,
   // the shape inference of paddle is not correct
   bool _has_nms = false;
-  std::vector<std::unordered_map<std::string, int64_t>> _constant_ops;
+  std::vector<std::map<std::string, int64_t>> _constant_ops;
 };
 
 template <typename T>
@@ -165,9 +165,13 @@ bool PaddleParser::TryGetTensorValue(const int64_t& block_id,
   auto op = _blocks_ops[block_id][iter->second];
   int64_t dtype;
   GetOpAttr(*op, "dtype", &dtype);
-  if (dtype == P2ODataType::INT64 || dtype == P2ODataType::INT32) {
+  if (dtype == P2ODataType::INT64) {
     std::vector<int64_t> value;
     GetOpAttr(*op, "int64_values", &value);
+    data->assign(value.begin(), value.end());
+  } else if (dtype == P2ODataType::INT32) {
+    std::vector<int64_t> value;
+    GetOpAttr(*op, "int32_values", &value);
     data->assign(value.begin(), value.end());
   } else if (dtype == P2ODataType::FP32) {
     std::vector<float> value;
